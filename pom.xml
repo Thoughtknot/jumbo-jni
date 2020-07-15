@@ -10,6 +10,17 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>jumbo-java-common</id>
+			<url>https://github.com/Thoughtknot/jumbo-java-common/packages/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
 	<distributionManagement>
 		<repository>
 			<id>github</id>
