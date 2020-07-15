@@ -29,11 +29,11 @@
 		</repository>
 	</distributionManagement>
 	<dependencies>
-	  	<dependency>
-	  		<groupId>org.jumbo</groupId>
-	  		<artifactId>jumbo-java-common</artifactId>
-	  		<version>1.0.0</version>
-	  	</dependency>
+		<dependency>
+			<groupId>org.jumbo</groupId>
+			<artifactId>jumbo-java-common</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
