@@ -74,7 +74,7 @@ public class JumboJniWrapper implements Jumbo {
 		if (val == null) {
 			throw new RuntimeException("Could not find a codec registered for table " + table);
 		}
-		List<byte[]> result = keys(table, limit);
+		List<byte[]> result = getKeys(table, limit);
 		return result
 			.stream()
 			.map(val::deserializeKey)
@@ -87,7 +87,7 @@ public class JumboJniWrapper implements Jumbo {
 		if (val == null) {
 			throw new RuntimeException("Could not find a codec registered for table " + table);
 		}
-		del(table, val.serializeKey(key));
+		delete(table, val.serializeKey(key));
 	}
 
 	@Override
