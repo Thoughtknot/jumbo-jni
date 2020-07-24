@@ -12,14 +12,21 @@ import java.util.stream.Collectors;
 import org.jumbo.codec.Codec;
 import org.jumbo.codec.CodecRegistry;
 
-public class Jumbo {
-	private final JumboJni jni = new JumboJni();
+public class JumboJniWrapper implements Jumbo {
+	public final JumboJni jni = new JumboJni();
 	private final CodecRegistry registry;
 	
-	private Jumbo(int size) throws IOException {
-		String libName = "libjumbo_jni.so"; // The name of the file in resources/ dir
+	private JumboJniWrapper(int size) throws IOException {
+		String os = System.getProperty("os.name");
+		String libName;
+		if (os.contains("Windows")) {
+			libName = "jumbo_jni.dll";
+		}
+		else {
+			libName = "libjumbo_jni.so"; 
+		}
 		URL url = getClass().getResource("/" + libName);
-		File tmpDir = Files.createTempDirectory("libjumbo_jni").toFile();
+		File tmpDir = Files.createTempDirectory("jumbo_jni").toFile();
 		tmpDir.deleteOnExit();
 		File nativeLibTmpFile = new File(tmpDir, libName);
 		nativeLibTmpFile.deleteOnExit();
@@ -28,17 +35,19 @@ public class Jumbo {
 		}
 		System.load(nativeLibTmpFile.getAbsolutePath());
 		registry = CodecRegistry.get();
+		
 		jni.init(size);
 	}
 	
-	public static Jumbo initialize(int size) {
+	public static JumboJniWrapper initialize(int size) {
 		try {
-			return new Jumbo(size);
+			return new JumboJniWrapper(size);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	@Override
 	public void putObject(int table, Object key, Object value) throws IOException {
 		Codec<Object, Object> val = registry.getCodec(table);
 		if (val == null) {
@@ -46,7 +55,8 @@ public class Jumbo {
 		}
 		put(table, val.serializeKey(key), val.serializeValue(value));
 	}
-	
+
+	@Override
 	public Object getObject(int table, Object key) throws IOException {
 		Codec<Object, Object> val = registry.getCodec(table);
 		if (val == null) {
@@ -57,7 +67,8 @@ public class Jumbo {
 			return null;
 		return val.deserializeValue(result);
 	}
-	
+
+	@Override
 	public List<Object> getKeysObject(int table, int limit) throws IOException {
 		Codec<Object, Object> val = registry.getCodec(table);
 		if (val == null) {
@@ -70,6 +81,7 @@ public class Jumbo {
 			.collect(Collectors.toList());
 	}
 
+	@Override
 	public void deleteObject(int table, Object key) throws IOException {
 		Codec<Object, Object> val = registry.getCodec(table);
 		if (val == null) {
@@ -77,19 +89,24 @@ public class Jumbo {
 		}
 		del(table, val.serializeKey(key));
 	}
-	
+
+	@Override
 	public void put(int table, byte[] key, byte[] value) {
 		jni.put(table, key, value);
 	}
-	
+
+	@Override
 	public byte[] get(int table, byte[] key) {
 		return jni.get(table, key);
 	}
-	
-	public void del(int table, byte[] key) {
+
+	@Override
+	public void delete(int table, byte[] key) {
 		jni.del(table, key);
 	}
-	public List<byte[]> keys(int table, int limit) {
+	
+	@Override
+	public List<byte[]> getKeys(int table, int limit) {
 		byte[][] keyBytes = jni.keys(table, limit);
 		List<byte[]> keys = new ArrayList<>(keyBytes.length);
 		for (int i = 0; i < keyBytes.length; i++) {
