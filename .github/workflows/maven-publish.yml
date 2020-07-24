@@ -11,23 +11,18 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
-
-    - name: Build with Maven
-      run: mvn package
-
-    - name: Publish to GitHub Packages Apache Maven
+    - name: setup
       run: |
-           mkdir -p ~/.m2
-           echo "<settings><servers><server><id>github</id><username>Thoughtknot</username><password>${GITHUB_TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
-           mvn deploy
+        cp _settings.xml ~/.m2/settings.xml
+        mvn package
+        mvn deploy
       env:
+        GITHUB_ACTOR: Thoughtknot
         GITHUB_TOKEN: ${{ github.token }}
