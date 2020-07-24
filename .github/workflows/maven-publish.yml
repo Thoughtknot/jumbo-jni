@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
@@ -22,7 +23,7 @@ jobs:
       run: |
         cp _settings.xml ~/.m2/settings.xml
         mvn package
-        mvn deploy
+        mvn deploy -DskipTests
       env:
         GITHUB_ACTOR: Thoughtknot
         GITHUB_TOKEN: ${{ github.token }}
